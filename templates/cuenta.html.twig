@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket</title>
+    <link rel="stylesheet" href="{{ asset('ticket.css') }}">
+</head>
+    <body>
+    <h1>Bar Oretania</h1>
+    <h2>Fecha: {{ "now"|date("d/m/y") }}</h2>
+    <h3>Hora: {{ "now"|date("H:i") }}</h3>
+    <h2>Mesa: {{ mesa }}</h2>
+    <h2>Productos:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unidad</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set total = 0 %}
+            {% for producto in pedido %}
+                <tr class="{{ cycle(['par','impar'],loop.index) }}">
+                    <td>{{ producto.concepto }}</td>
+                    <td>{{ producto.cantidad }} </td>
+                    <td>{{ producto.precio_ud|format_currency("EUR") }}</td>
+                    {% set totalProducto = producto.cantidad*producto.precio_ud %}
+                    <td>{{ totalProducto|format_currency("EUR") }}</td>
+                    {% set total = total+totalProducto %}
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3">Precio Total Del Ticket:</th>
+                    <td>{{ total|format_currency("EUR")  }}</td>
+                </tr>
+                <tr>
+                    <th colspan="3">Precio Total con IVA ({{ iva }}):</th>
+                    {% set totaliva = total+total*(iva/100) %}
+                    <td>{{ totaliva|format_currency("EUR")  }}</td>
+                </tr>
+                <tr>
+                    <th colspan="3">Precio Total con Descuento ({{ descuento }}):</th>
+                    {% set totaldescuento = totaliva-totaliva*(descuento/100) %}
+                    <td>{{ totaldescuento|format_currency("EUR")  }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </body>
+</html>
